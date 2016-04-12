@@ -83,6 +83,24 @@ exports.pushState = function (options, data, next) {
 };
 
 /**
+ * reload
+ * reloads url
+ *
+ * @name reload
+ * @function
+ * @param {Object} options Object containig data handler options
+ * @param {Object} data An object containing the following fields:
+ *
+ *  - `url` (String): The new url(required).
+ *
+ * @param {Function} next The next function.
+ */
+exports.reload = function (options, data, next) {
+    var url = options._.url || '/';
+    global.location.replace(url);
+};
+
+/**
  * state
  * get url state
  *
