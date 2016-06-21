@@ -24,27 +24,7 @@ exports.init = function (config, ready) {
                             data.url = global.location.pathname;
                         }
 
-                        // create event stream
-                        var eventStream = self._streams[eventName];
-                        if (!eventStream) {
-                            eventStream = self.flow(eventName);
-
-                            var handler = function (err) {
-                                if (err) {
-                                    console.error(err);
-                                }
-                                delete self._streams[eventName];
-                            };
-
-                            // cache stream
-                            self._streams[eventName] = eventStream;
-
-                            eventStream.on('error', handler);
-                            eventStream.on('end', handler);
-                            eventStream.on('data', function nirvana () {});
-                        }
-
-                        eventStream.write(data);
+                        self.flow(eventName).write(data);
                     });
                 }
             });
