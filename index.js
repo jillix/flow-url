@@ -114,6 +114,61 @@ exports.state = function (options, data, next) {
     next(null, state);
 };
 
+/**
+ * returns querystring param
+ *
+ * @name getQsParam
+ * @function
+ * @param {Object} options Object containig data handler options
+ * @param {Object} data An object containing the following fields:
+ *
+ * @param {Function} next The next function.
+ */
+exports.getQsParam = function (options, data, next) {
+
+    var pathname = (typeof location !== 'undefined' ) ? location.pathname : data.url || (data.req.url || '');
+
+    if (!options._.params || (typeof options._.params !== 'string' && !(options._.params instanceof Array))) {
+        return next(new Error('Flow-url.getQsParam: Invalid param name.'), data);
+    }
+
+    var params = options._.params;
+    if (typeof params === 'string') {
+        params = [params];
+    }
+
+    var target = data;
+    if (options._.target) {
+        var splits = options._.target.split('.');
+
+        splits.forEach(function (key) {
+            if (!target[key]) {
+                target[key] = {};
+            }
+            target = target[key];
+        });
+    }
+
+    params.forEach(function (name) {
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+        var results = regex.exec(pathname);
+
+        if (!results) {
+            target[name] = null;
+            return;
+        };
+        if (!results[2]) {
+            target[name] = '';
+            return;
+        }
+
+        target[name] = decodeURIComponent(results[2].replace(/\+/g, " "));
+    });
+
+    next(null, data);
+};
+
 
 /**
  * Extend event object with location data.
