@@ -48,7 +48,7 @@ exports.init = function (config, ready) {
  * @param {Function} next The next function.
  */
 exports.pushState = function (options, data, next) {
-    var url = data.url || options.url || options._.url;
+    var url = data.url || options.url;
 
     if (!url) {
         return next(null, data);
@@ -76,7 +76,7 @@ exports.pushState = function (options, data, next) {
  * @param {Function} next The next function.
  */
 exports.reload = function (options, data, next) {
-    var url = options._.url || '/';
+    var url = options.url || '/';
     global.location.replace(url);
 };
 
@@ -106,8 +106,8 @@ exports.state = function (options, data, next) {
 
     var state = handleStateValues();
 
-    if (typeof options._ === 'string') {
-        data[options._] = state;
+    if (typeof options === 'string') {
+        data[options] = state;
         return next(null, data);
     }
 
@@ -128,18 +128,18 @@ exports.getQsParam = function (options, data, next) {
 
     var pathname = (typeof location !== 'undefined' ) ? location.pathname : data.url || (data.req.url || '');
 
-    if (!options._.params || (typeof options._.params !== 'string' && !(options._.params instanceof Array))) {
+    if (!options.params || (typeof options.params !== 'string' && !(options.params instanceof Array))) {
         return next(new Error('Flow-url.getQsParam: Invalid param name.'), data);
     }
 
-    var params = options._.params;
+    var params = options.params;
     if (typeof params === 'string') {
         params = [params];
     }
 
     var target = data;
-    if (options._.target) {
-        var splits = options._.target.split('.');
+    if (options.target) {
+        var splits = options.target.split('.');
 
         splits.forEach(function (key) {
             if (!target[key]) {
